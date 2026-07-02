@@ -2,7 +2,7 @@
 
 An R Shiny dashboard mapping care and support services for persons with disabilities (PWD) in Unguja, Zanzibar — built under UNDP's **Care Georeferencing Tool (CGT)**, part of the joint global programme *"Unpaid Care, Disability, and Gender Transformative Approach Programme"* (funded by the Global Disability Fund; implemented by UNDP, UN Women, UNICEF, UNFPA, ILO, and OHCHR).
 
-**Live app:** https://danidlsa.shinyapps.io/zanzibar-pwd-dashboard/
+**Live app:** https://cgtundp.shinyapps.io/zanzibar-pwd-dashboard/
 
 See [METHODOLOGICAL_NOTE.md](METHODOLOGICAL_NOTE.md) for full background on the CGT, data sources, and intended use.
 
