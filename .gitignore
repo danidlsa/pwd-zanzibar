@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+rsconnect/
+www/media/
+data/
+UNDP_Logo_Blue.ai
+.Renviron
+*.DS_Store

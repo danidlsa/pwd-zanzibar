@@ -1,0 +1,1 @@
+DEMAND_URL="/vsicurl/https://undpgeohub.blob.core.windows.net/userdata/<container>/datasets/<file>.pmtiles?<sas-token>"
