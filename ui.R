@@ -125,14 +125,14 @@ ui <- function(request) {
         Shiny.setInputValue('text_size_set', size);
       }
 
-      // Apply text-size class on <body> (Normal / Large / X-Large)
+      // Apply text-size class on the page body (Normal / Large / X-Large)
       Shiny.addCustomMessageHandler('setTextSize', function(msg) {
         document.body.classList.remove('text-lg', 'text-xl');
         if (msg.size === 'lg')      document.body.classList.add('text-lg');
         else if (msg.size === 'xl') document.body.classList.add('text-xl');
       });
 
-      // Toggle night-mode class on <body>
+      // Toggle night-mode class on the page body
       Shiny.addCustomMessageHandler('setNightMode', function(msg) {
         if (msg.on) document.body.classList.add('night-mode');
         else        document.body.classList.remove('night-mode');
