@@ -9,8 +9,6 @@ ui <- function(request) {
   ),
 
   # ── Head ───────────────────────────────────────────────────────────────────
-  useShinyjs(),
-
   tags$head(
     tags$meta(charset = "UTF-8"),
     tags$meta(name = "viewport",
@@ -127,33 +125,20 @@ ui <- function(request) {
         Shiny.setInputValue('text_size_set', size);
       }
 
-      // Cycle text size class on body (Normal / Large / X-Large)
+      // Apply text-size class on <body> (Normal / Large / X-Large)
       Shiny.addCustomMessageHandler('setTextSize', function(msg) {
         document.body.classList.remove('text-lg', 'text-xl');
         if (msg.size === 'lg')      document.body.classList.add('text-lg');
         else if (msg.size === 'xl') document.body.classList.add('text-xl');
-        var btn = document.getElementById('text_size_toggle');
-        if (btn) {
-          btn.setAttribute('aria-label', msg.aria);
-          btn.setAttribute('aria-pressed', msg.size === 'normal' ? 'false' : 'true');
-          if (msg.size === 'normal') btn.classList.remove('active');
-          else                       btn.classList.add('active');
-        }
       });
 
-      // Toggle night mode class on body + update button state
+      // Toggle night-mode class on <body>
       Shiny.addCustomMessageHandler('setNightMode', function(msg) {
         if (msg.on) document.body.classList.add('night-mode');
         else        document.body.classList.remove('night-mode');
-        var btn = document.getElementById('night_toggle');
-        if (btn) {
-          btn.setAttribute('aria-pressed', msg.on ? 'true' : 'false');
-          if (msg.on) btn.classList.add('active');
-          else        btn.classList.remove('active');
-        }
       });
 
-      // Toggle high-contrast class on both map containers + update button state
+      // Toggle high-contrast class on both map containers
       Shiny.addCustomMessageHandler('setHighContrast', function(msg) {
         ['map', 'demand_map'].forEach(function(id) {
           var el = document.getElementById(id);
@@ -162,12 +147,6 @@ ui <- function(request) {
             else        el.classList.remove('hc-mode');
           }
         });
-        var btn = document.getElementById('hc_toggle');
-        if (btn) {
-          btn.setAttribute('aria-pressed', msg.on ? 'true' : 'false');
-          if (msg.on) btn.classList.add('active');
-          else        btn.classList.remove('active');
-        }
       });
     ")),
 

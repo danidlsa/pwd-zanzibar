@@ -87,12 +87,7 @@ server <- function(input, output, session) {
   })
 
   observe({
-    s   <- text_size()
-    pct <- switch(s, normal = "100%", lg = "115%", xl = "130%")
-    session$sendCustomMessage("setTextSize", list(
-      size = s,
-      aria = paste0(tr("a11y_text_size"), ": ", pct)
-    ))
+    session$sendCustomMessage("setTextSize", list(size = text_size()))
   })
 
   # ── Night mode (checkbox in accessibility menu) ───────────────────────────
@@ -442,7 +437,6 @@ server <- function(input, output, session) {
   output$lbl_skip             <- renderText(tr("skip_to_content"))
   output$lbl_primary_question <- renderText(tr("primary_question"))
   output$lbl_refine_heading   <- renderText(tr("refine_heading"))
-  output$lbl_refine_locked    <- renderText(tr("refine_locked"))
   output$lbl_district         <- renderText(tr("filter_district"))
   output$lbl_service          <- renderText(tr("filter_service"))
   output$lbl_disability       <- renderText(tr("filter_disability"))

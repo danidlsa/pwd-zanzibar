@@ -1,14 +1,12 @@
 library(shiny)
 library(bslib)
 library(leaflet)
-library(leaflet.extras)
 library(sf)
 library(dplyr)
 library(htmltools)
 library(tools)
 library(DT)
 library(sodium)
-library(shinyjs)
 
 source("helpers/translations.R")
 source("helpers/data_prep.R")
@@ -54,12 +52,13 @@ ICON_HEALTH <- ICON_HEALTH_COLOR
 ICON_SCHOOL <- ICON_SCHOOL_COLOR
 
 # ---------------------------------------------------------------------------
-# Demand layer (single GeoHub PMTiles dataset; rebuilt locally via
-# prepare_geohub_data.R into data/geohub_cache/demand.rds before deploy).
-# DEMAND_URL (includes a time-limited SAS token — currently expires
-# 2027-06-06) is read from the environment, not hardcoded. Set it in a local
-# .Renviron (gitignored) for development, and as an environment variable on
-# shinyapps.io for deployment. Refresh via the GeoHub dataset API when needed.
+# Demand layer configuration.
+# The app reads DEMAND_RDS_PATH at runtime (a pre-processed .rds bundled with
+# the deploy). DEMAND_URL is only used offline by prepare_geohub_data.R to
+# refresh that cache. It's read from the environment (.Renviron locally, an
+# env var on the server) so the SAS token is never committed.
+# Current token expires 2027-06-06 — regenerate via GeoHub then re-run
+# prepare_geohub_data.R and redeploy.
 # ---------------------------------------------------------------------------
 DEMAND_URL <- Sys.getenv("DEMAND_URL")
 DEMAND_FIELD     <- "Total.population.with.disabilities"
