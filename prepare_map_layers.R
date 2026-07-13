@@ -1,18 +1,19 @@
 # ============================================================================
-# prepare_geohub_data.R
+# prepare_map_layers.R
 # ----------------------------------------------------------------------------
-# Run this LOCALLY whenever you want fresh demand data from GeoHub, before
-# deploying to shinyapps.io.
+# Run this LOCALLY whenever the source map data changes, before redeploying.
 #
-#   source("prepare_geohub_data.R")
-#   rsconnect::deployApp()
+#   source("prepare_map_layers.R")
+#   rsconnect::deployApp()   # or the deploy command for your target server
 #
-# Why: shinyapps.io GDAL doesn't include the PMTiles driver, so the demand
-# layer is pre-fetched here and cached as a small, pre-filtered .rds that the
-# deployed app reads directly from disk (instant, no network on each session).
+# What it does: fetches / reads each map layer, trims and simplifies it for
+# fast browser rendering, and saves the result to data/layers/*.rds. The
+# deployed app reads those .rds files directly from disk — no runtime calls
+# to any external service.
 #
-# Only ONE layer is cached now (PWD demand). All other accessibility / care-
-# and-support-desert layers are linked to GeoHub directly (open in new tab).
+# Currently only the PWD demand layer is prepared here. When the accessibility
+# layers are added (see handover note §3.1), extend this script to bundle
+# each of them the same way.
 # ============================================================================
 
 library(sf)

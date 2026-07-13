@@ -54,15 +54,15 @@ ICON_SCHOOL <- ICON_SCHOOL_COLOR
 # ---------------------------------------------------------------------------
 # Demand layer configuration.
 # The app reads DEMAND_RDS_PATH at runtime (a pre-processed .rds bundled with
-# the deploy). DEMAND_URL is only used offline by prepare_geohub_data.R to
+# the deploy). DEMAND_URL is only used offline by prepare_map_layers.R to
 # refresh that cache. It's read from the environment (.Renviron locally, an
 # env var on the server) so the SAS token is never committed.
 # Current token expires 2027-06-06 — regenerate via GeoHub then re-run
-# prepare_geohub_data.R and redeploy.
+# prepare_map_layers.R and redeploy.
 # ---------------------------------------------------------------------------
 DEMAND_URL <- Sys.getenv("DEMAND_URL")
 DEMAND_FIELD     <- "Total.population.with.disabilities"
-DEMAND_RDS_PATH  <- file.path("data", "geohub_cache", "demand.rds")
+DEMAND_RDS_PATH  <- file.path("data", "layers", "demand.rds")
 GEOHUB_PUBLIC_URL <- "https://geohub.data.undp.org/maps/532"
 
 # Palette: Purples (Jenks), legend bins start at 1, zeros stay transparent
