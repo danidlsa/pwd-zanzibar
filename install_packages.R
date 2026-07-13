@@ -1,7 +1,7 @@
 # Run this once to install all required packages
-pkgs <- c("shiny", "bslib", "leaflet", "leaflet.extras", "sf",
+pkgs <- c("shiny", "bslib", "leaflet", "sf",
           "dplyr", "htmltools", "tools", "rsconnect",
-          "DT", "sodium", "shinyjs", "viridisLite", "future", "promises",
+          "DT", "sodium",
           "classInt", "RColorBrewer")
 
 to_install <- pkgs[!pkgs %in% rownames(installed.packages())]
