@@ -86,6 +86,61 @@ ui <- function(request) {
         }
       });
 
+      // ── Accessibility dropdown menu ─────────────────────────────────────
+      function toggleA11yPanel(e) {
+        if (e) e.stopPropagation();
+        var p = document.getElementById('a11y_panel');
+        var b = document.getElementById('a11y_toggle');
+        if (!p) return;
+        var open = p.style.display === 'block';
+        p.style.display = open ? 'none' : 'block';
+        if (b) b.setAttribute('aria-expanded', open ? 'false' : 'true');
+      }
+      function closeA11yPanel() {
+        var p = document.getElementById('a11y_panel');
+        var b = document.getElementById('a11y_toggle');
+        if (p) p.style.display = 'none';
+        if (b) b.setAttribute('aria-expanded', 'false');
+      }
+      // Click outside closes it
+      document.addEventListener('click', function(e) {
+        var p = document.getElementById('a11y_panel');
+        var b = document.getElementById('a11y_toggle');
+        if (!p || p.style.display !== 'block') return;
+        if (p.contains(e.target) || (b && b.contains(e.target))) return;
+        closeA11yPanel();
+      });
+      // Escape closes it
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeA11yPanel();
+      });
+
+      // Text size: user clicked one of A / A+ / A++ inside the panel
+      function setTextSizeUI(size) {
+        // Update button highlight inside the panel
+        var btns = document.querySelectorAll('.a11y-size-btn');
+        btns.forEach(function(b) {
+          if (b.getAttribute('data-size') === size) b.classList.add('active');
+          else                                       b.classList.remove('active');
+        });
+        // Tell Shiny
+        Shiny.setInputValue('text_size_set', size);
+      }
+
+      // Cycle text size class on body (Normal / Large / X-Large)
+      Shiny.addCustomMessageHandler('setTextSize', function(msg) {
+        document.body.classList.remove('text-lg', 'text-xl');
+        if (msg.size === 'lg')      document.body.classList.add('text-lg');
+        else if (msg.size === 'xl') document.body.classList.add('text-xl');
+        var btn = document.getElementById('text_size_toggle');
+        if (btn) {
+          btn.setAttribute('aria-label', msg.aria);
+          btn.setAttribute('aria-pressed', msg.size === 'normal' ? 'false' : 'true');
+          if (msg.size === 'normal') btn.classList.remove('active');
+          else                       btn.classList.add('active');
+        }
+      });
+
       // Toggle night mode class on body + update button state
       Shiny.addCustomMessageHandler('setNightMode', function(msg) {
         if (msg.on) document.body.classList.add('night-mode');
@@ -206,6 +261,88 @@ ui <- function(request) {
 
       /* HC button active state */
       .hc-btn.active {
+        background: white !important;
+        color: #0468B1 !important;
+        font-weight: 700;
+      }
+
+      /* ── Accessibility dropdown menu ─────────────────────────────────── */
+      .a11y-btn {
+        display: inline-flex; align-items: center;
+        gap: 4px; padding: 6px 12px;
+      }
+      .a11y-panel {
+        position: absolute; top: calc(100% + 8px); right: 0;
+        background: white; color: #222;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.20);
+        padding: 14px 16px 12px 16px;
+        min-width: 240px; max-width: 280px;
+        z-index: 2000;
+      }
+      .a11y-panel-header {
+        display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px; margin-bottom: 12px;
+        color: #0468B1; font-size: 0.95rem;
+      }
+      .a11y-close {
+        background: none; border: none; cursor: pointer;
+        color: #666; font-size: 1.4rem; line-height: 1;
+        padding: 0 6px; border-radius: 4px;
+      }
+      .a11y-close:hover { background: #f0f0f0; color: #000; }
+      .a11y-section { margin-bottom: 12px; }
+      .a11y-section-label {
+        display: block; font-size: 0.78rem; font-weight: 600;
+        color: #444; margin-bottom: 6px;
+      }
+      .a11y-size-group {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+      }
+      .a11y-size-btn {
+        background: #f4f6f8; border: 1.5px solid #e0e0e0;
+        color: #333; border-radius: 6px;
+        padding: 10px 8px; cursor: pointer;
+        font-weight: 700; min-height: 44px;
+        transition: all 0.15s;
+      }
+      .a11y-size-btn:hover { background: #e8ecf0; border-color: #0468B1; }
+      .a11y-size-btn.active {
+        background: #0468B1; color: white; border-color: #0468B1;
+      }
+      .a11y-check-row {
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 8px; border: 1px solid #e0e0e0;
+        border-radius: 6px; cursor: pointer;
+        font-size: 0.88rem; margin-bottom: 8px;
+        transition: background 0.15s;
+      }
+      .a11y-check-row:hover { background: #f4f6f8; }
+      .a11y-check-row input[type='checkbox'] {
+        width: 18px; height: 18px; cursor: pointer;
+        accent-color: #0468B1;
+      }
+      /* Night-mode overrides for the panel itself */
+      body.night-mode .a11y-panel { background: #1e2a45; color: #d0d0d0; }
+      body.night-mode .a11y-panel-header { color: #90b4e8; border-bottom-color: #333; }
+      body.night-mode .a11y-close { color: #aaa; }
+      body.night-mode .a11y-close:hover { background: #2a3550; color: #fff; }
+      body.night-mode .a11y-section-label { color: #bbb; }
+      body.night-mode .a11y-size-btn { background: #252f47; border-color: #444; color: #d0d0d0; }
+      body.night-mode .a11y-size-btn:hover { background: #2a3550; }
+      body.night-mode .a11y-check-row { border-color: #444; }
+      body.night-mode .a11y-check-row:hover { background: #2a3550; }
+
+      /* ── Text size scaling ────────────────────────────────────────────
+         Bumps the root font-size; every rem/em-based element scales.
+         Leaflet map controls use px on purpose (UI chrome) and are
+         unaffected — that's the standard convention.                */
+      body.text-lg { font-size: 115%; }
+      body.text-xl { font-size: 130%; }
+
+      /* Text-size button active state (matches HC / night pattern) */
+      .text-size-btn.active {
         background: white !important;
         color: #0468B1 !important;
         font-weight: 700;
@@ -492,21 +629,71 @@ ui <- function(request) {
       style = "display:flex; gap:8px; flex-shrink:0; align-items:center;",
       # Logged-in indicator + logout (hidden when not authenticated)
       uiOutput("auth_header_ui"),
-      tags$button(
-        id           = "night_toggle",
-        class        = "lang-btn night-btn",
-        onclick      = "Shiny.setInputValue('night_btn', Math.random())",
-        `aria-label` = "Toggle night mode",
-        `aria-pressed` = "false",
-        textOutput("night_btn_label", inline = TRUE)
-      ),
-      tags$button(
-        id           = "hc_toggle",
-        class        = "lang-btn hc-btn",
-        onclick      = "Shiny.setInputValue('hc_btn', Math.random())",
-        `aria-label` = "Toggle high contrast mode",
-        `aria-pressed` = "false",
-        textOutput("hc_btn_label", inline = TRUE)
+      # ── Accessibility menu (dropdown button) ────────────────────────────
+      tags$div(
+        class = "a11y-wrap",
+        style = "position:relative;",
+        tags$button(
+          id             = "a11y_toggle",
+          class          = "lang-btn a11y-btn",
+          onclick        = "toggleA11yPanel(event)",
+          `aria-label`   = "Accessibility menu",
+          `aria-haspopup`= "true",
+          `aria-expanded`= "false",
+          # Person / accessibility icon (SVG, inherits currentColor)
+          HTML('<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle; margin-right:6px;" aria-hidden="true"><circle cx="12" cy="4" r="2"/><path d="M19 7h-5v14h-2v-6h-2v6H8V7H3v2h4v12a1 1 0 0 0 2 0v-6h2v6a1 1 0 0 0 2 0V9h4V7z"/></svg>'),
+          tags$span(textOutput("a11y_menu_label", inline = TRUE))
+        ),
+        tags$div(
+          id    = "a11y_panel",
+          class = "a11y-panel",
+          role  = "dialog",
+          `aria-label` = "Accessibility settings",
+          style = "display:none;",
+          # Header
+          tags$div(class = "a11y-panel-header",
+            tags$strong(textOutput("a11y_menu_label2", inline = TRUE)),
+            tags$button(
+              class          = "a11y-close",
+              onclick        = "closeA11yPanel()",
+              `aria-label`   = "Close",
+              HTML("&times;")
+            )
+          ),
+          # Text size row
+          tags$div(class = "a11y-section",
+            tags$label(class = "a11y-section-label",
+                       textOutput("a11y_lbl_size", inline = TRUE)),
+            tags$div(class = "a11y-size-group", role = "group",
+              tags$button(class = "a11y-size-btn active",
+                          `data-size` = "normal",
+                          onclick = "setTextSizeUI('normal')",
+                          "A"),
+              tags$button(class = "a11y-size-btn",
+                          `data-size` = "lg",
+                          onclick = "setTextSizeUI('lg')",
+                          style = "font-size:1.1em;",
+                          "A+"),
+              tags$button(class = "a11y-size-btn",
+                          `data-size` = "xl",
+                          onclick = "setTextSizeUI('xl')",
+                          style = "font-size:1.25em;",
+                          "A++")
+            )
+          ),
+          # High contrast row
+          tags$label(class = "a11y-check-row",
+            tags$input(type = "checkbox", id = "a11y_hc",
+                       onchange = "Shiny.setInputValue('hc_check', this.checked)"),
+            tags$span(textOutput("a11y_lbl_hc", inline = TRUE))
+          ),
+          # Night mode row
+          tags$label(class = "a11y-check-row",
+            tags$input(type = "checkbox", id = "a11y_night",
+                       onchange = "Shiny.setInputValue('night_check', this.checked)"),
+            tags$span(textOutput("a11y_lbl_night", inline = TRUE))
+          )
+        )
       ),
       tags$button(
         id           = "lang_toggle",

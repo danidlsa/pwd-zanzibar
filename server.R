@@ -66,31 +66,47 @@ server <- function(input, output, session) {
     session$sendCustomMessage("setLang", list(lang = lang()))
   })
 
-  # ── Night mode ────────────────────────────────────────────────────────────
-  night_mode <- reactiveVal(FALSE)
+  # ── Accessibility menu labels ─────────────────────────────────────────────
+  output$a11y_menu_label   <- renderText(tr("a11y_menu"))
+  output$a11y_menu_label2  <- renderText(tr("a11y_menu"))
+  output$a11y_lbl_size     <- renderText(tr("a11y_text_size"))
+  output$a11y_lbl_hc       <- renderText(tr("a11y_high_contrast"))
+  output$a11y_lbl_night    <- renderText(tr("a11y_night_mode"))
+  # These live inside a display:none panel that JS toggles — Shiny would
+  # otherwise suspend them and they'd never populate on first open.
+  outputOptions(output, "a11y_menu_label2", suspendWhenHidden = FALSE)
+  outputOptions(output, "a11y_lbl_size",    suspendWhenHidden = FALSE)
+  outputOptions(output, "a11y_lbl_hc",      suspendWhenHidden = FALSE)
+  outputOptions(output, "a11y_lbl_night",   suspendWhenHidden = FALSE)
 
-  observeEvent(input$night_btn, { night_mode(!night_mode()) })
+  # ── Text size (chosen directly from A / A+ / A++ pill buttons) ────────────
+  text_size <- reactiveVal("normal")
 
-  output$night_btn_label <- renderText({
-    if (night_mode()) tr("night_off") else tr("night_on")
+  observeEvent(input$text_size_set, {
+    text_size(input$text_size_set)
   })
 
+  observe({
+    s   <- text_size()
+    pct <- switch(s, normal = "100%", lg = "115%", xl = "130%")
+    session$sendCustomMessage("setTextSize", list(
+      size = s,
+      aria = paste0(tr("a11y_text_size"), ": ", pct)
+    ))
+  })
+
+  # ── Night mode (checkbox in accessibility menu) ───────────────────────────
+  night_mode <- reactiveVal(FALSE)
+  observeEvent(input$night_check, { night_mode(isTRUE(input$night_check)) },
+               ignoreInit = TRUE)
   observe({
     session$sendCustomMessage("setNightMode", list(on = night_mode()))
   })
 
-  # ── High-contrast mode ────────────────────────────────────────────────────
+  # ── High-contrast mode (checkbox in accessibility menu) ───────────────────
   hc_mode <- reactiveVal(FALSE)
-
-  observeEvent(input$hc_btn, {
-    hc_mode(!hc_mode())
-  })
-
-  output$hc_btn_label <- renderText({
-    if (hc_mode()) tr("hc_off") else tr("hc_on")
-  })
-
-  # HC mode is purely CSS — basemap stays Positron, filter inverts it
+  observeEvent(input$hc_check, { hc_mode(isTRUE(input$hc_check)) },
+               ignoreInit = TRUE)
   observe({
     session$sendCustomMessage("setHighContrast", list(on = hc_mode()))
   })
